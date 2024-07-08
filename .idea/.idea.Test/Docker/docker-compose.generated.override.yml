@@ -1,0 +1,40 @@
+# This is a generated file. Not intended for manual editing.
+services:
+  api:
+    build:
+      context: "C:\\Users\\stageuser3\\Desktop\\Apps\\Prova\\Test"
+      dockerfile: "API/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/API.dll"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "api:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\stageuser3\\.nuget\\packages:/home/app/.nuget/packages"
+    - "C:\\Users\\stageuser3\\Desktop\\Apps\\Prova\\Test\\API:/app:rw"
+    - "C:\\Users\\stageuser3\\Desktop\\Apps\\Prova\\Test:/src:rw"
+    working_dir: "/app"
+  client:
+    build:
+      context: "C:\\Users\\stageuser3\\Desktop\\Apps\\Prova\\Test"
+      dockerfile: "Client/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/../../../../../.nuget/packages/microsoft.aspnetcore.components.webassembly.devserver/8.0.5/tools/blazor-devserver.dll"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "client:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\stageuser3\\.nuget\\packages:/root/.nuget/packages"
+    - "C:\\Users\\stageuser3\\Desktop\\Apps\\Prova\\Test\\Client:/app:rw"
+    - "C:\\Users\\stageuser3\\Desktop\\Apps\\Prova\\Test:/src:rw"
+    working_dir: "/app"

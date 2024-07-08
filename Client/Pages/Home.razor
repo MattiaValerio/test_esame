@@ -1,0 +1,86 @@
+﻿@page "/"
+@using Shared.Models
+@using Client.Components
+@using Client.lib
+@inject IConfiguration Configuration
+
+<PageTitle>Home</PageTitle>
+
+@if (StaticData.PersonsList != null)
+{
+    if (_showForm)
+    {
+        <AddPersonForm OnCancel="() => _showForm = false"/>
+    }
+    else
+    {
+        <div class="d-flex justify-content-center mb-5">
+            <button class="btn btn-primary w-100 fw-bold" @onclick="_ => _showForm = true">ADD PERSON</button>
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Last Name</th>
+                <th>Age</th>
+                <th>Remove</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var person in StaticData.PersonsList)
+            {
+                <tr>
+                    <td>@person.Name</td>
+                    <td>@person.LastName</td>
+                    <td>@person.Age</td>
+                    <td>@person.Birth</td>
+                    <td>
+                        <button class="btn btn-danger" @onclick="async () => await RemovePerson(person.Id)">Remove</button>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>   
+    }
+}
+
+
+@code
+{
+    private string? _apiUrl;
+    private bool _showForm = false;
+    private HttpClient? Http { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _apiUrl = Configuration["ApiUrl"];
+
+            Http = new HttpClient();
+            if (_apiUrl != null) Http.BaseAddress = new Uri(_apiUrl);
+
+            var req = await Http.GetFromJsonAsync<List<Person>>("/Person");
+
+            if (req != null)
+            {
+                StaticData.PersonsList = req;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private async Task RemovePerson(int personId)
+    {
+        var response = await Http?.DeleteAsync($"/Person/{personId}")!;
+        if (response.IsSuccessStatusCode)
+        {
+            if (StaticData.PersonsList != null) StaticData.PersonsList = StaticData.PersonsList.Where(p => p.Id != personId).ToList();
+            StateHasChanged();
+        }
+    }
+}
