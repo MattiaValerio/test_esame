@@ -11,7 +11,7 @@ builder.Services.AddDbContext<DataContext>(options =>
 // add the schema filter, show the enum values in the swagger
 builder.Services.AddSwaggerGen(cfg => cfg.SchemaFilter<EnumSchemaFilter>());
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -24,11 +24,16 @@ public class DataContext : DbContext
         base.OnModelCreating(modelBuilder);
         
         // seed data
-        modelBuilder.Entity<Person>().HasData(new Person("Mattia", "Valerio", 21, new DateOnly(2002, 11, 19)));
-        modelBuilder.Entity<Person>().HasData(new Person("Mario", "Rossi", 30, new DateOnly(1991, 1, 1)));
-        modelBuilder.Entity<Person>().HasData(new Person("Luca", "Bianchi", 25, new DateOnly(1996, 5, 5)));
+        modelBuilder.Entity<Person>().HasData(
+            new Person(1,"Mattia", "Valerio", new DateOnly(2002, 11, 19)),
+            new Person(2,"Mario", "Rossi", new DateOnly(1991, 1, 1)),
+            new Person(3, "Luca", "Bianchi", new DateOnly(1996, 5, 5)),
+            new Person(4,"Luca", "Verdi", new DateOnly(1981, 2, 2)),
+            new Person(5,"John", "Doe", new DateOnly(1996, 10, 10)),
+            new Person(6,"Jane", "Doe", new DateOnly(1999, 5, 5))
+        );
     }
 
     // Add your DbSets here
-    DbSet<Person> People { get; set; }
+    public DbSet<Person> People { get; set; }
 }

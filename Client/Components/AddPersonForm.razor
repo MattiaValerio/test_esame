@@ -1,0 +1,50 @@
+﻿@using Client.lib
+@using Shared.Models
+@inject IConfiguration Configuration
+
+<div >
+    <h3 class="text-uppercase text-center fw-bold">Add Person</h3>
+    @* form to add a person*@
+    <div class="d-flex flex-column gap-2">
+        <div class="form-group d-flex flex-column gap-3">
+            <div>
+                <label for="name">Name</label>
+                <input type="text" class="form-control" id="name" placeholder="Enter name" @bind="Person.Name">
+            </div>
+            <div>
+                <label for="lastname">LastName</label>
+                <input type="text" class="form-control" id="lastname" placeholder="Enter name" @bind="Person.LastName">
+            </div>
+            <div>
+                <label for="birth">Birth</label>
+                <input type="date" class="form-control" id="birth" placeholder="Enter name" @bind="Person.Birth">
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn w-100 btn-danger" @onclick="async() => await OnCancel.InvokeAsync()">CANCEL</button>
+            <button class="btn w-100 btn-success" @onclick="async() => await AddPerson()">ADD</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public EventCallback OnCancel { get; set; }
+    public Person Person { get; set; } = new Person();
+    public HttpClient Htpp { get; set; } = new HttpClient();
+
+    protected override void OnInitialized()
+    {
+        Htpp.BaseAddress = new Uri(Configuration["ApiUrl"]);
+    
+    }
+
+    private async Task AddPerson()
+    {
+        var response = await Htpp.PostAsJsonAsync("person", Person);
+        if (response.IsSuccessStatusCode)
+        {
+            StaticData.PersonsList?.Add(Person);
+            await OnCancel.InvokeAsync();
+        }
+    }
+}
