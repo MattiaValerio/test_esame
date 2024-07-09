@@ -14,6 +14,7 @@ public class Person
     
     public Person()
     {
+        Age = CalculateAge();
     }
     public Person(int id, string name, string lastName,DateOnly birth)
     {

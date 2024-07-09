@@ -9,42 +9,49 @@
         <div class="form-group d-flex flex-column gap-3">
             <div>
                 <label for="name">Name</label>
-                <input type="text" class="form-control" id="name" placeholder="Enter name" @bind="Person.Name">
+                <input type="text" class="form-control" id="name" placeholder="Enter name" @bind="FormPerson.Name">
             </div>
             <div>
                 <label for="lastname">LastName</label>
-                <input type="text" class="form-control" id="lastname" placeholder="Enter name" @bind="Person.LastName">
+                <input type="text" class="form-control" id="lastname" placeholder="Enter name" @bind="FormPerson.LastName">
             </div>
             <div>
                 <label for="birth">Birth</label>
-                <input type="date" class="form-control" id="birth" placeholder="Enter name" @bind="Person.Birth">
+                <input type="date" class="form-control" id="birth" placeholder="Enter name" @bind="FormPerson.Birth">
             </div>
         </div>
         <div class="d-flex gap-2">
-            <button class="btn w-100 btn-danger" @onclick="async() => await OnCancel.InvokeAsync()">CANCEL</button>
-            <button class="btn w-100 btn-success" @onclick="async() => await AddPerson()">ADD</button>
+            <button class="btn w-100 btn-danger" @onclick="async () => await OnCancel.InvokeAsync()">CANCEL</button>
+            <button class="btn w-100 btn-success" @onclick="async () => await AddPerson()">ADD</button>
         </div>
     </div>
 </div>
 
 @code {
     [Parameter] public EventCallback OnCancel { get; set; }
-    public Person Person { get; set; } = new Person();
+    public Person FormPerson { get; set; } = new Person();
     public HttpClient Htpp { get; set; } = new HttpClient();
 
     protected override void OnInitialized()
     {
         Htpp.BaseAddress = new Uri(Configuration["ApiUrl"]);
-    
     }
 
     private async Task AddPerson()
     {
-        var response = await Htpp.PostAsJsonAsync("person", Person);
-        if (response.IsSuccessStatusCode)
+        try
         {
-            StaticData.PersonsList?.Add(Person);
-            await OnCancel.InvokeAsync();
+            Person p = new Person(StaticData.PersonsList.Count() +1, FormPerson.Name, FormPerson.LastName, FormPerson.Birth);
+            var response = await Htpp.PostAsJsonAsync("person", p);
+            if (response.IsSuccessStatusCode)
+            {
+                StaticData.PersonsList?.Add(p);
+                await OnCancel.InvokeAsync();
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
         }
     }
 }

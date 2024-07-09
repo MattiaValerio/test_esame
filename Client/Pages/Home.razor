@@ -31,10 +31,10 @@
             @foreach (var person in StaticData.PersonsList)
             {
                 <tr>
+                    <td>@person.Id</td>
                     <td>@person.Name</td>
                     <td>@person.LastName</td>
                     <td>@person.Age</td>
-                    <td>@person.Birth</td>
                     <td>
                         <button class="btn btn-danger" @onclick="async () => await RemovePerson(person.Id)">Remove</button>
                     </td>
@@ -50,15 +50,14 @@
 {
     private string? _apiUrl;
     private bool _showForm = false;
-    private HttpClient? Http { get; set; }
+    private HttpClient Http { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             _apiUrl = Configuration["ApiUrl"];
-
-            Http = new HttpClient();
+ 
             if (_apiUrl != null) Http.BaseAddress = new Uri(_apiUrl);
 
             var req = await Http.GetFromJsonAsync<List<Person>>("/Person");
@@ -76,11 +75,17 @@
 
     private async Task RemovePerson(int personId)
     {
-        var response = await Http?.DeleteAsync($"/Person/{personId}")!;
-        if (response.IsSuccessStatusCode)
+        try
         {
-            if (StaticData.PersonsList != null) StaticData.PersonsList = StaticData.PersonsList.Where(p => p.Id != personId).ToList();
-            StateHasChanged();
+            var response = await Http?.DeleteAsync($"/Person/{personId}")!;
+            if (response.IsSuccessStatusCode)
+            {
+                if (StaticData.PersonsList != null) StaticData.PersonsList = StaticData.PersonsList.Where(p => p.Id != personId).ToList();
+                StateHasChanged();
+            }    
+        }catch(Exception ex)
+        {
+            Console.WriteLine(ex.Message);
         }
     }
 }
